@@ -54,7 +54,7 @@ function simulateBall(rows: number): number {
 }
 
 const PlinkoGame = () => {
-  const { goldCoins, user } = useAuthBalance();
+  const { goldCoins, user, openWalletModal } = useAuthBalance();
   const { placeBet, resolveGame } = useBettingEngine();
   const [betAmount, setBetAmount] = useState(100);
   const [risk, setRisk] = useState<"low" | "medium" | "high">("medium");
@@ -145,15 +145,15 @@ const PlinkoGame = () => {
               <label className="text-xs text-muted-foreground uppercase tracking-wider mb-2 block">Risk Level</label>
               <div className="flex gap-2">
                 {(["low", "medium", "high"] as const).map((r) => (
-                  <button key={r} onClick={() => setRisk(r)} disabled={dropping}
+                  <button key={r} onClick={() => setRisk(r)} disabled={dropping || processing}
                     className={`flex-1 py-2 rounded-lg text-xs font-medium capitalize transition-all ${risk === r ? "gold-gradient text-primary-foreground" : "bg-secondary text-secondary-foreground"}`}>
                     {r}
                   </button>
                 ))}
               </div>
             </div>
-            <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={dropBall}
-              disabled={dropping || processing || !user}
+            <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={user ? dropBall : openWalletModal}
+              disabled={dropping || processing}
               className="w-full gold-shimmer-btn font-bold py-3 rounded-xl gold-glow disabled:opacity-50">
               {!user ? "Sign In to Play" : dropping ? "Dropping..." : processing ? "Placing bet..." : "Drop Ball"}
             </motion.button>

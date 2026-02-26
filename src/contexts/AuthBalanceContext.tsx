@@ -8,6 +8,9 @@ interface BalanceState {
   loading: boolean;
   goldCoins: number;
   sweepTokens: number;
+  isWalletModalOpen: boolean;
+  openWalletModal: () => void;
+  closeWalletModal: () => void;
   refreshBalance: () => Promise<void>;
   signOut: () => Promise<void>;
 }
@@ -25,6 +28,10 @@ export const AuthBalanceProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const [goldCoins, setGoldCoins] = useState(0);
   const [sweepTokens, setSweepTokens] = useState(0);
+  const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
+
+  const openWalletModal = useCallback(() => setIsWalletModalOpen(true), []);
+  const closeWalletModal = useCallback(() => setIsWalletModalOpen(false), []);
 
   const fetchBalance = useCallback(async (userId: string) => {
     const { data } = await supabase
@@ -113,7 +120,10 @@ export const AuthBalanceProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   return (
-    <AuthBalanceContext.Provider value={{ user, loading, goldCoins, sweepTokens, refreshBalance, signOut }}>
+    <AuthBalanceContext.Provider value={{ 
+      user, loading, goldCoins, sweepTokens, refreshBalance, signOut,
+      isWalletModalOpen, openWalletModal, closeWalletModal
+    }}>
       {children}
     </AuthBalanceContext.Provider>
   );

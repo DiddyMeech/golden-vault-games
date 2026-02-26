@@ -53,7 +53,7 @@ const TileButton = memo(({ tile, index, active, onReveal }: { tile: Tile; index:
 TileButton.displayName = "TileButton";
 
 const MinesGame = () => {
-  const { goldCoins, user } = useAuthBalance();
+  const { goldCoins, user, openWalletModal } = useAuthBalance();
   const { placeBet, resolveGame } = useBettingEngine();
   const [mineCount, setMineCount] = useState(5);
   const [betAmount, setBetAmount] = useState(100);
@@ -169,11 +169,13 @@ const MinesGame = () => {
               {revealed > 0 && gameActive && <div className="text-xs text-muted-foreground">Win: {calcPayout(betAmount, currentMultiplier).toLocaleString()} GC</div>}
             </div>
             {!gameActive && !gameOver && (
-              <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={startGame} disabled={processing || !user}
-                className="w-full gold-shimmer-btn font-bold py-3 rounded-xl gold-glow disabled:opacity-50">
-                {!user ? "Sign In to Play" : processing ? "Placing bet..." : "Start Game"}
-              </motion.button>
-            )}
+              <div className="flex gap-2">
+                <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={user ? startGame : openWalletModal}
+                  disabled={processing}
+                  className="flex-1 gold-shimmer-btn font-bold py-3 rounded-xl gold-glow disabled:opacity-50">
+                  {!user ? "Sign In to Play" : processing ? "Placing bet..." : "Start Game"}
+                </motion.button>
+              </div>)}
             {gameActive && revealed > 0 && (
               <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={cashOut} disabled={processing}
                 className="w-full font-bold py-3 rounded-xl border-2"

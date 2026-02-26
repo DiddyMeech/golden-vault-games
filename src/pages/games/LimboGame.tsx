@@ -10,7 +10,7 @@ import LiveWinsFeed from "@/components/LiveWinsFeed";
 import LiveWinsFeed from "@/components/LiveWinsFeed";
 
 const LimboGame = () => {
-  const { goldCoins, user } = useAuthBalance();
+  const { goldCoins, user, openWalletModal } = useAuthBalance();
   const { placeBet, resolveGame } = useBettingEngine();
   const [betAmount, setBetAmount] = useState(100);
   const [target, setTarget] = useState(2.0);
@@ -95,8 +95,8 @@ const LimboGame = () => {
               <span>Payout: {payout.toLocaleString()} GC</span>
             </div>
             {gameState === "idle" && (
-              <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={play}
-                disabled={processing || !user}
+              <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={user ? play : openWalletModal}
+                disabled={processing}
                 className="w-full gold-shimmer-btn font-bold py-3 rounded-xl gold-glow disabled:opacity-50">
                 {!user ? "Sign In to Play" : "⚡ Roll"}
               </motion.button>

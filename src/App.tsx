@@ -9,6 +9,7 @@ import AuthPage from "./pages/AuthPage";
 import NotFound from "./pages/NotFound";
 import DashboardLayout from "@/components/DashboardLayout";
 import Lobby from "@/pages/Lobby";
+import WalletModalProvider from "@/components/WalletModalProvider";
 import MinesGame from "@/pages/games/MinesGame";
 import TowerGame from "@/pages/games/TowerGame";
 import SlotsGame from "@/pages/games/SlotsGame";
@@ -42,8 +43,9 @@ const App = () => (
     <TooltipProvider>
       <BrowserRouter>
         <AuthBalanceProvider>
-          <Toaster />
-          <Sonner />
+          <WalletModalProvider>
+            <Toaster />
+            <Sonner />
           <ComplianceBanner />
           <Routes>
             <Route path="/" element={<Index />} />
@@ -76,6 +78,7 @@ const App = () => (
             <Route path="*" element={<NotFound />} />
           </Routes>
           <LiveSupportBubble />
+          </WalletModalProvider>
         </AuthBalanceProvider>
       </BrowserRouter>
     </TooltipProvider>

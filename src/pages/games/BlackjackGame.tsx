@@ -5,6 +5,7 @@ import { useAuthBalance } from "@/contexts/AuthBalanceContext";
 import { useBettingEngine } from "@/hooks/useBettingEngine";
 import TopUpModal from "@/components/TopUpModal";
 import LiveWinsFeed from "@/components/LiveWinsFeed";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
 // --- Game Logic Constants & Types ---
 const SUITS = ["hearts", "diamonds", "clubs", "spades"];
@@ -82,6 +83,10 @@ const BlackjackGame = () => {
   const [showTopUp, setShowTopUp] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [sessionIds, setSessionIds] = useState<Record<string, string>>({}); // Mapping hand ID to DB session
+  
+  const [betDialogOpen, setBetDialogOpen] = useState(false);
+  const [betDialogSeat, setBetDialogSeat] = useState<number | null>(null);
+  const [betInput, setBetInput] = useState("100");
 
   // Initialize Shoe
   useEffect(() => {
@@ -99,6 +104,16 @@ const BlackjackGame = () => {
     setShoe(currentShoe);
     return card;
   }, [shoe]);
+
+  const confirmBet = () => {
+    const amt = parseInt(betInput || "0");
+    if (!isNaN(amt) && amt > 0 && betDialogSeat !== null) {
+      const h = [...hands];
+      h[betDialogSeat].bet = amt;
+      setHands(h);
+    }
+    setBetDialogOpen(false);
+  };
 
   // Place Bets & Deal Initial Cards
   const deal = async () => {
@@ -430,12 +445,9 @@ const BlackjackGame = () => {
                   <div className={`w-16 h-24 border-2 border-dashed rounded-xl flex items-center justify-center transition-colors ${gameState === "betting" ? "border-primary/40 bg-primary/5 hover:border-primary/80 cursor-pointer" : "border-white/5 bg-transparent"}`}
                     onClick={() => {
                       if (gameState === "betting") {
-                        const amt = parseInt(window.prompt("Enter Bet Amount (GC):", "100") || "0");
-                        if (!isNaN(amt) && amt > 0) {
-                          const h = [...hands];
-                          h[idx].bet = amt;
-                          setHands(h);
-                        }
+                        setBetDialogSeat(idx);
+                        setBetInput("100");
+                        setBetDialogOpen(true);
                       }
                     }}>
                     <span className="text-white/30 text-[10px] font-bold uppercase tracking-wider text-center px-2">
@@ -524,6 +536,31 @@ const BlackjackGame = () => {
       </div>
       
       <TopUpModal open={showTopUp} onClose={() => setShowTopUp(false)} currency="gc" />
+
+      <Dialog open={betDialogOpen} onOpenChange={setBetDialogOpen}>
+        <DialogContent className="sm:max-w-md bg-card/90 backdrop-blur-xl border-border/50">
+          <DialogHeader>
+            <DialogTitle className="gold-text">Place Bet - Seat {betDialogSeat !== null ? betDialogSeat + 1 : ""}</DialogTitle>
+            <DialogDescription>Enter your bet amount in Gold Coins (GC).</DialogDescription>
+          </DialogHeader>
+          <div className="flex items-center space-x-2 my-4">
+            <input 
+              type="number" 
+              value={betInput}
+              onChange={(e) => setBetInput(e.target.value)}
+              className="flex-1 bg-input border border-border rounded-lg px-3 py-2 text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+              autoFocus
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') confirmBet();
+              }}
+            />
+          </div>
+          <div className="flex justify-end gap-2">
+            <button onClick={() => setBetDialogOpen(false)} className="px-4 py-2 rounded-lg bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-colors font-medium">Cancel</button>
+            <button onClick={confirmBet} className="px-4 py-2 rounded-lg gold-shimmer-btn gold-glow font-bold text-black transition-colors">Confirm Bet</button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

@@ -8,7 +8,7 @@ import TopUpModal from "@/components/TopUpModal";
 import LiveWinsFeed from "@/components/LiveWinsFeed";
 
 const DiceGame = () => {
-  const { goldCoins, user } = useAuthBalance();
+  const { goldCoins, user, openWalletModal } = useAuthBalance();
   const { placeBet, resolveGame } = useBettingEngine();
   const [betAmount, setBetAmount] = useState(100);
   const [threshold, setThreshold] = useState(50);
@@ -117,8 +117,8 @@ const DiceGame = () => {
               </div>
             </div>
             {gameState === "idle" && (
-              <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={play}
-                disabled={processing || !user}
+              <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={user ? play : openWalletModal}
+                disabled={processing}
                 className="w-full gold-shimmer-btn font-bold py-3 rounded-xl gold-glow disabled:opacity-50">
                 {!user ? "Sign In to Play" : "🎲 Roll Dice"}
               </motion.button>

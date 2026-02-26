@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Coins, Gift, X, Clock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuthBalance } from "@/contexts/AuthBalanceContext";
 
 const STORAGE_KEY = "goldvault_last_claim";
 const COOLDOWN_MS = 24 * 60 * 60 * 1000;
@@ -22,18 +23,19 @@ function formatTime(ms: number) {
 }
 
 const DailyBonus = () => {
+  const { user } = useAuthBalance();
   const [open, setOpen] = useState(false);
   const [claimed, setClaimed] = useState(false);
   const [timeLeft, setTimeLeft] = useState(getTimeLeft);
   const [showCoins, setShowCoins] = useState(false);
 
-  // Check on mount if bonus is available and show popup
+  // Check on mount if bonus is available and show popup (only if signed in)
   useEffect(() => {
-    if (getTimeLeft() === 0) {
+    if (user && getTimeLeft() === 0) {
       const timer = setTimeout(() => setOpen(true), 1500);
       return () => clearTimeout(timer);
     }
-  }, []);
+  }, [user]);
 
   // Countdown ticker
   useEffect(() => {
@@ -75,6 +77,8 @@ const DailyBonus = () => {
   };
 
   const canClaim = timeLeft === 0 && !claimed;
+
+  if (!user) return null;
 
   return (
     <>

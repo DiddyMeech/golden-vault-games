@@ -10,7 +10,7 @@ import LiveWinsFeed from "@/components/LiveWinsFeed";
 const HOUSE_EDGE = 0.03;
 
 const CrashGame = () => {
-  const { goldCoins, user } = useAuthBalance();
+  const { goldCoins, user, openWalletModal } = useAuthBalance();
   const { placeBet, resolveGame } = useBettingEngine();
   const [betAmount, setBetAmount] = useState(100);
   const [showTopUp, setShowTopUp] = useState(false);
@@ -152,8 +152,8 @@ const CrashGame = () => {
               </div>
             </div>
             {gameState === "idle" && (
-              <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={startGame}
-                disabled={processing || !user}
+              <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={user ? startGame : openWalletModal}
+                disabled={processing}
                 className="w-full gold-shimmer-btn font-bold py-3 rounded-xl gold-glow disabled:opacity-50">
                 {!user ? "Sign In to Play" : processing ? "Starting..." : "🚀 Launch"}
               </motion.button>

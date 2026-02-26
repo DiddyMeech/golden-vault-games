@@ -4,13 +4,11 @@ import { Menu, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import vault0xLogo from "@/assets/vault0x-logo.png";
 import { useAuthBalance } from "@/contexts/AuthBalanceContext";
-import WalletLogin from "@/components/WalletLogin";
-import { Dialog, DialogContent, DialogTrigger, DialogTitle } from "@/components/ui/dialog";
 
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const navigate = useNavigate();
-  const { user, signOut } = useAuthBalance();
+  const { user, signOut, openWalletModal } = useAuthBalance();
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 glass-card border-b border-border/50 backdrop-blur-2xl">
@@ -41,17 +39,9 @@ const Navbar = () => {
               </button>
             </div>
           ) : (
-            <Dialog>
-              <DialogTrigger asChild>
-                <button className="hidden md:block gold-shimmer-btn font-semibold text-sm px-5 py-2 rounded-full gold-glow">
-                  Connect Wallet
-                </button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-md bg-transparent border-none p-0">
-                <DialogTitle className="sr-only">Connect Wallet</DialogTitle>
-                <WalletLogin />
-              </DialogContent>
-            </Dialog>
+            <button onClick={openWalletModal} className="hidden md:block gold-shimmer-btn font-semibold text-sm px-5 py-2 rounded-full gold-glow">
+              Connect Wallet
+            </button>
           )}
           
           <button className="md:hidden text-foreground" onClick={() => setMobileOpen(!mobileOpen)}>
@@ -84,9 +74,15 @@ const Navbar = () => {
                   </button>
                 </>
               ) : (
-                <div className="pt-4 flex justify-center">
-                   <WalletLogin />
-                </div>
+                <button
+                  onClick={() => {
+                    openWalletModal();
+                    setMobileOpen(false);
+                  }}
+                  className="w-full text-left font-medium text-foreground py-2"
+                >
+                  Connect Wallet
+                </button>
               )}
             </div>
           </motion.div>

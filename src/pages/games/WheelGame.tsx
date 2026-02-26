@@ -50,7 +50,7 @@ const WHEEL_CONFIGS: Record<RiskLevel, { label: string; mult: number; color: str
 };
 
 const WheelGame = () => {
-  const { goldCoins, user } = useAuthBalance();
+  const { goldCoins, user, openWalletModal } = useAuthBalance();
   const { placeBet, resolveGame } = useBettingEngine();
   const [betAmount, setBetAmount] = useState(100);
   const [risk, setRisk] = useState<RiskLevel>("low");
@@ -217,8 +217,8 @@ const WheelGame = () => {
               </div>
             </div>
             {gameState === "idle" && (
-              <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={spin}
-                disabled={processing || !user}
+              <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={user ? spin : openWalletModal}
+                disabled={processing}
                 className="w-full gold-shimmer-btn font-bold py-3 rounded-xl gold-glow disabled:opacity-50">
                 {!user ? "Sign In to Play" : "🎡 Spin"}
               </motion.button>
