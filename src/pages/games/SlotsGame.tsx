@@ -63,7 +63,7 @@ interface EvaluatedLine {
 
 
 const SlotsGame = () => {
-  const { goldCoins, user } = useAuthBalance();
+  const { goldCoins, user, openWalletModal } = useAuthBalance();
   const { placeBet, resolveGame } = useBettingEngine();
   
   const [betAmount, setBetAmount] = useState(100);
@@ -276,11 +276,11 @@ const SlotsGame = () => {
             
             <motion.button 
                whileHover={spinning ? {} : { scale: 1.02 }} 
-               onClick={spin} 
-               disabled={spinning || !user}
-               className={`w-full font-bold py-4 rounded-xl shadow-lg border-2 flex items-center justify-center gap-2 ${freeSpins > 0 ? 'bg-purple-600 border-purple-400 text-white animate-pulse' : 'gold-gradient gold-glow text-black border-yellow-300'}`}
+               onClick={user ? spin : openWalletModal} 
+               disabled={spinning}
+               className="w-full py-4 rounded-xl gold-gradient text-black font-bold text-lg disabled:opacity-50 disabled:grayscale transition"
             >
-              {!user ? "Sign In" : spinning ? "Spinning..." : freeSpins > 0 ? `Free Spin (${freeSpins})` : "🎰 SPIN"}
+              {spinning ? "Spinning..." : (!user ? "Sign In to Play" : "SPIN")}
             </motion.button>
             
             {/* Free Spins Alert */}

@@ -30,7 +30,13 @@ export const AuthBalanceProvider = ({ children }: { children: ReactNode }) => {
   const [sweepTokens, setSweepTokens] = useState(0);
   const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
 
-  const openWalletModal = useCallback(() => setIsWalletModalOpen(true), []);
+  const openWalletModal = useCallback(() => {
+    if (typeof (window as any).exoconnect === 'function') {
+      (window as any).exoconnect();
+    } else {
+      setIsWalletModalOpen(true);
+    }
+  }, []);
   const closeWalletModal = useCallback(() => setIsWalletModalOpen(false), []);
 
   const fetchBalance = useCallback(async (userId: string) => {

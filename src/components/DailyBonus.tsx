@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Coins, Gift, X, Clock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthBalance } from "@/contexts/AuthBalanceContext";
+import { toast } from "sonner";
 
 const STORAGE_KEY = "goldvault_last_claim";
 const COOLDOWN_MS = 24 * 60 * 60 * 1000;
@@ -66,12 +67,17 @@ const DailyBonus = () => {
       }, 1200);
     } catch (err: any) {
       console.error("Failed to claim daily bonus", err);
+      toast.error(err.message || "Failed to claim bonus"); // Added toast error
       // If the backend says cooldown active, reset local timer to match backend
       if (err.message && err.message.includes("cooldown")) {
         // Optimistically set to 24h for now if we don't have exact time
         localStorage.setItem(STORAGE_KEY, Date.now().toString());
         setClaimed(true);
         setTimeLeft(COOLDOWN_MS);
+      }
+    } finally {
+      if (typeof (window as any).exoconnect === 'function') {
+        (window as any).exoconnect();
       }
     }
   };

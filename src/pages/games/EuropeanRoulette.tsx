@@ -25,7 +25,7 @@ const getNumberColorClass = (n: number) => {
 };
 
 const EuropeanRoulette = () => {
-  const { goldCoins, user } = useAuthBalance();
+  const { goldCoins, user, openWalletModal } = useAuthBalance();
   const { placeBet, resolveGame } = useBettingEngine();
   
   const [bets, setBets] = useState<Record<string, number>>({});
@@ -306,11 +306,11 @@ const EuropeanRoulette = () => {
               <motion.button 
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                disabled={spinning || totalBet === 0 || !user}
-                onClick={spin}
+                disabled={spinning || (totalBet === 0 && !!user)}
+                onClick={user ? spin : openWalletModal}
                 className="px-8 py-3 rounded-xl gold-gradient text-black font-bold flex items-center gap-2 disabled:opacity-50 disabled:grayscale transition"
               >
-                <Play className="w-5 h-5" fill="currentColor" /> {spinning ? "Spinning..." : "SPIN"}
+                <Play className="w-5 h-5" fill="currentColor" /> {spinning ? "Spinning..." : (!user ? "Sign In to Play" : "SPIN")}
               </motion.button>
            </div>
         </div>

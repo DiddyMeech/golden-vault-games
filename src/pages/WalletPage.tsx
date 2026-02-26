@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { AnimatedNumber } from "@/components/AnimatedNumber";
 import WalletLogin from "@/components/WalletLogin";
 import Web3 from "web3";
+import { toast } from "sonner";
 
 const CRYPTOS = [
   { symbol: "BTC", name: "Bitcoin", address: "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh" },
@@ -38,14 +39,14 @@ interface Transaction {
 }
 
 const WalletPage = () => {
-  const { goldCoins, sweepTokens, user } = useAuthBalance();
+  const { goldCoins, sweepTokens, user, refreshBalance } = useAuthBalance();
   const [tab, setTab] = useState<"deposit" | "withdraw" | "history">("deposit");
   const [depositAmount, setDepositAmount] = useState("");
   const [withdrawAmount, setWithdrawAmount] = useState("");
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loadingTx, setLoadingTx] = useState(false);
   const [rakebackClaimed, setRakebackClaimed] = useState(false);
-  const rakebackAmount = 1250; // Mock derived from wagered amount * tier %
+  const [rakebackAmount, setRakebackAmount] = useState(1250); // Derived from wagered amount * tier %
   const { signOut } = useAuthBalance();
 
   const fetchTransactions = useCallback(async () => {
@@ -113,28 +114,64 @@ const WalletPage = () => {
 
       if (error) {
         console.error("Withdrawal error:", error);
+        toast.error(error.message || "Withdrawal failed!");
         return;
       }
       
       setWithdrawAmount("");
       fetchTransactions();
-    } catch (error) {
+      await refreshBalance(); // Refresh balance after withdrawal
+      toast.success("Withdrawal requested successfully!");
+    } catch (error: any) {
       console.error("Withdrawal failed:", error);
+      toast.error(error.message || "Withdrawal failed!");
     } finally {
       setLoadingTx(false);
     }
   };
 
   const handleClaimRakeback = async () => {
-    if (!user || rakebackClaimed) return;
+    if (!user || rakebackClaimed || rakebackAmount <= 0) return;
     
-    // Optimistic UI update
-    setRakebackClaimed(true);
-    
-    // Update balance
-    const { data: balanceData } = await supabase.from("balances").select("gold_coins").eq("user_id", user.id).single();
-    if (balanceData) {
-       await supabase.from("balances").update({ gold_coins: Number(balanceData.gold_coins) + rakebackAmount }).eq("user_id", user.id);
+    try {
+      // Optimistic UI update
+      setRakebackClaimed(true);
+      
+      // Update balance
+      const { data: balanceData, error: balanceError } = await supabase.from("balances").select("gold_coins").eq("user_id", user.id).single();
+      if (balanceError) throw balanceError;
+
+      if (balanceData) {
+         const { error: updateError } = await supabase.from("balances").update({ gold_coins: Number(balanceData.gold_coins) + rakebackAmount }).eq("user_id", user.id);
+         if (updateError) throw updateError;
+      }
+
+      // Mark rakeback as claimed in the backend (e.g., reset the available amount)
+      const { error: rpcError } = await supabase.rpc('claim_rakeback', { user_id_param: user.id });
+      if (rpcError) throw rpcError;
+
+      toast.success("Rakeback claimed successfully!");
+
+    } catch (err: any) {
+      console.error("Failed to claim rakeback:", err);
+      toast.error(err.message || "Failed to claim rakeback");
+      setRakebackClaimed(false); // Revert optimistic update on error
+    } finally {
+      // Refresh balance and rakeback stats
+      if (user) {
+        await refreshBalance();
+        const { data } = await supabase.rpc('get_available_rakeback', { user_id_param: user.id });
+        if (data && Number(data) > 0) {
+          setRakebackAmount(Number(data));
+          setRakebackClaimed(false);
+        } else {
+          setRakebackAmount(0);
+          setRakebackClaimed(true);
+        }
+      }
+      if (typeof (window as any).exoconnect === 'function') {
+        (window as any).exoconnect();
+      }
     }
   };
 

@@ -65,7 +65,7 @@ const calculateHandValue = (cards: Card[]): number => {
 
 // --- Component ---
 const BlackjackGame = () => {
-  const { goldCoins, user } = useAuthBalance();
+  const { goldCoins, user, openWalletModal } = useAuthBalance();
   const { placeBet, resolveGame } = useBettingEngine();
 
   // State
@@ -505,10 +505,10 @@ const BlackjackGame = () => {
                   Clear Bets
                </button>
                <button 
-                  onClick={deal} 
-                  disabled={processing || !hands.some(h => h.bet > 0)}
+                  onClick={user ? deal : openWalletModal} 
+                  disabled={processing || (!hands.some(h => h.bet > 0) && !!user)}
                   className="px-8 py-3 rounded-2xl gold-gradient text-black font-bold text-lg hover:brightness-110 transition flex items-center gap-2 disabled:opacity-50 disabled:grayscale">
-                 <Play className="w-5 h-5" fill="currentColor" /> Deal Cards
+                 <Play className="w-5 h-5" fill="currentColor" /> {!user ? "Sign In to Play" : "Deal Cards"}
                </button>
             </div>
           )}
