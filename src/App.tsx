@@ -31,6 +31,7 @@ import AmlPolicy from "@/pages/legal/AmlPolicy";
 import AdminPage from "@/pages/AdminPage";
 import BlackjackGame from "@/pages/games/BlackjackGame";
 import EuropeanRoulette from "@/pages/games/EuropeanRoulette";
+import SlotMachine from "@/components/SlotMachine";
 
 import ComplianceBanner from "@/components/ComplianceBanner";
 
@@ -59,6 +60,7 @@ const App = () => (
               <Route path="/games/wheel" element={<WheelGame />} />
               <Route path="/games/blackjack" element={<BlackjackGame />} />
               <Route path="/games/roulette" element={<EuropeanRoulette />} />
+              <Route path="/games/simple-slots" element={<SlotMachine />} />
               <Route path="/wallet" element={<WalletPage />} />
               <Route path="/vip" element={<VipPage />} />
               <Route path="/support" element={<SupportPage />} />
