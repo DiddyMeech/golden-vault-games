@@ -395,7 +395,7 @@ const BlackjackGame = () => {
   };
 
   return (
-    <div className="grid grid-cols-1 xl:grid-cols-[1fr_280px] gap-6 max-w-7xl mx-auto p-4 absolute inset-0 pt-20 overflow-y-auto w-full pb-[120px]">
+    <div className="grid grid-cols-1 xl:grid-cols-[1fr_280px] gap-6">
       <div className="flex flex-col h-full bg-[#0d2112] border border-border/20 rounded-3xl overflow-hidden relative shadow-2xl">
         {/* Table Felt Background */}
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/felt.png')] opacity-30 pointer-events-none"></div>

@@ -31,7 +31,7 @@ function getFloorMultiplier(floor: number): number {
 }
 
 const TowerGame = () => {
-  const { goldCoins, user } = useAuthBalance();
+  const { goldCoins, user, openWalletModal } = useAuthBalance();
   const { placeBet, resolveGame } = useBettingEngine();
   const [betAmount, setBetAmount] = useState(100);
   const [tower, setTower] = useState<Floor[]>(() => generateTower());
@@ -129,7 +129,7 @@ const TowerGame = () => {
   }, []);
 
   return (
-    <div className="grid grid-cols-1 xl:grid-cols-[1fr_280px] gap-6 max-w-7xl mx-auto p-4 absolute inset-0 pt-20 overflow-y-auto w-full pb-[120px]">
+    <div className="grid grid-cols-1 xl:grid-cols-[1fr_280px] gap-6">
       <div>
         <div className="flex items-center gap-2 mb-6">
             <TowerControl className="w-6 h-6 text-primary" />
@@ -159,8 +159,8 @@ const TowerGame = () => {
             </div>
             
             {!gameActive && !gameOver && (
-                <motion.button whileHover={{scale:1.02}} whileTap={{scale:0.98}} onClick={startGame} disabled={processing||!user} title="Start Game" className="w-full gold-shimmer-btn font-bold py-4 rounded-xl gold-glow disabled:opacity-50 text-black shadow-lg">
-                    {!user ? "Sign In" : "Start Climb"}
+                <motion.button whileHover={{scale:1.02}} whileTap={{scale:0.98}} onClick={user ? startGame : openWalletModal} disabled={processing} title={user ? "Start Climb" : "Sign In to Play"} className="w-full gold-shimmer-btn font-bold py-4 rounded-xl gold-glow disabled:opacity-50 text-black shadow-lg">
+                    {!user ? "Sign In to Play" : "Start Climb"}
                 </motion.button>
             )}
             
